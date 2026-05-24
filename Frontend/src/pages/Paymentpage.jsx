@@ -66,7 +66,7 @@ export default function PaymentPage() {
         handler: async function (response) {
 
           const verifyRes = await fetch(
-            "http://localhost:8080/api/payment/verify",
+            "VITE_API_URL/api/payment/verify",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },

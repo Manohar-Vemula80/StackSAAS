@@ -109,7 +109,7 @@ export default function Dashboard() {
 
   try {
     const res = await fetch(
-      "http://localhost:8080/api/analyze",
+      "VITE_API_URL/api/analyze",
       {
         method: "POST",
         headers: {

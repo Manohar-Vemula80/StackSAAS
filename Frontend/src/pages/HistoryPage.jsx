@@ -8,7 +8,7 @@ export default function HistoryPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/recent")
+    fetch("VITE_API_URL/api/recent")
       .then((res) => res.json())
       .then((data) => {
         setHistoryData(Array.isArray(data) ? data : []);
