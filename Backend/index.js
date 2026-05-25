@@ -15,7 +15,7 @@ const app = express();
 // ✅ CORS
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://stack-saas.vercel.app", // ✅ CHANGE",
     methods: ["GET", "POST", "PUT", "DELETE"], // ✅ better format
     credentials: true,
   })
