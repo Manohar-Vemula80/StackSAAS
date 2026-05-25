@@ -39,7 +39,7 @@ export default function PaymentPage() {
     try {
       // 🟢 1. CREATE ORDER
       const res = await fetch(
-        "http://localhost:8080/api/payment/create-order",
+        "VITE_API_URL/api/payment/create-order",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

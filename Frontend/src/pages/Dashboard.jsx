@@ -56,7 +56,7 @@ export default function Dashboard() {
   }, [navigate]);
 
   useEffect(() => {
-  fetch("http://localhost:8080/api/recent")
+  fetch("VITE_API_URL/api/recent")
     .then((res) => res.json())
     .then((data) => {
       console.log("RECENT:", data);
@@ -83,7 +83,7 @@ export default function Dashboard() {
 
     try {
       const res = await fetch(
-        `http://localhost:8080/api/search?query=${value}`
+        `VITE_API_URL/api/search?query=${value}`
       );
       const data = await res.json();
 
