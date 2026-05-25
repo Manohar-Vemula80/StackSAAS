@@ -24,7 +24,7 @@ export default function Dashboard() {
   const { credits, deductCredits } = useCredit();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const API_BASE = import.meta.env.VITE_API_URL || "";
+  const API_BASE = import.meta.env.VITE_API_URL || "https://stacksaas.onrender.com";
 
   useEffect(() => {
     const fetchUser = async () => {

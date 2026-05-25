@@ -7,10 +7,12 @@ export default function ProfilePage() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const API_BASE = import.meta.env.VITE_API_URL || "https://stacksaas.onrender.com";
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login/success`, {
+        const response = await fetch(`${API_BASE}/auth/login/success`, {
           method: "GET",
           credentials: "include",
           headers: {

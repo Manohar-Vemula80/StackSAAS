@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCredit } from "../context/creditscontext";
 
+const API_BASE = import.meta.env.VITE_API_URL || "https://stacksaas.onrender.com";
+
 const plans = [
   { credits: 10, price: 99 },
   { credits: 50, price: 399, popular: true },
@@ -9,7 +11,6 @@ const plans = [
 ];
 
 export default function PaymentPage() {
-  const API_BASE = import.meta.env.VITE_API_URL || "";
   const navigate = useNavigate();
   const { addCredits } = useCredit();
 

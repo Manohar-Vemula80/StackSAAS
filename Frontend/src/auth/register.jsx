@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const API_BASE = import.meta.env.VITE_API_URL || "https://stacksaas.onrender.com";
+
 function Signup() {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
@@ -10,7 +12,7 @@ function Signup() {
 	const navigate = useNavigate();
 
 	const googleAuth = () => {
-		window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
+		window.location.href = `${API_BASE}/auth/google`;
 	};
 
 	const handleRegister = async (e) => {
@@ -28,7 +30,7 @@ function Signup() {
 
 		setLoading(true);
 		try {
-			const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
+			const response = await fetch(`${API_BASE}/auth/register`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

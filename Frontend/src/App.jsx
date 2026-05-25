@@ -20,10 +20,11 @@ import Login from './auth/login'
 
 function App() {
   const [user, setUser] = useState(null);
+  const API_BASE = import.meta.env.VITE_API_URL || "https://stacksaas.onrender.com";
 
 	const getUser = async () => {
 		try {
-			const url = `${import.meta.env.VITE_API_URL}/auth/login/success`;
+			const url = `${API_BASE}/auth/login/success`;
 			const { data } = await axios.get(url, { withCredentials: true });
 			setUser(data.user._json);
 		} catch (err) {

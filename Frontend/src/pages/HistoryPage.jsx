@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 export default function HistoryPage() {
   const navigate = useNavigate();
-  const API_BASE = import.meta.env.VITE_API_URL || "";
+  const API_BASE = import.meta.env.VITE_API_URL || "https://stacksaas.onrender.com";
 
   const [historyData, setHistoryData] = useState([]);
   const [loading, setLoading] = useState(true);
