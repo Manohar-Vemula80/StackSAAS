@@ -9,6 +9,7 @@ const plans = [
 ];
 
 export default function PaymentPage() {
+  const API_BASE = import.meta.env.VITE_API_URL || "";
   const navigate = useNavigate();
   const { addCredits } = useCredit();
 
@@ -39,7 +40,7 @@ export default function PaymentPage() {
     try {
       // 🟢 1. CREATE ORDER
       const res = await fetch(
-        "VITE_API_URL/api/payment/create-order",
+        `${API_BASE}/api/payment/create-order`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -66,7 +67,7 @@ export default function PaymentPage() {
         handler: async function (response) {
 
           const verifyRes = await fetch(
-            "VITE_API_URL/api/payment/verify",
+            `${API_BASE}/api/payment/verify`,
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },

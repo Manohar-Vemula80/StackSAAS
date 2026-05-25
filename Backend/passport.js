@@ -7,7 +7,9 @@ passport.use(
         {
             clientID: process.env.CLIENT_ID,
             clientSecret: process.env.CLIENT_SECRET,
-            callbackURL: "VITE_API_URL/auth/google/callback",
+            callbackURL: process.env.SERVER_URL
+                ? `${process.env.SERVER_URL}/auth/google/callback`
+                : "https://stacksaas.onrender.com/auth/google/callback",
             scope: ["profile", "email"],
             userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
         },

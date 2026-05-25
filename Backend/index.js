@@ -12,11 +12,24 @@ const authRoute = require("./Route/auth");
 
 const app = express();
 
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
+
 // ✅ CORS
+const clientUrl = process.env.CLIENT_URL || "https://stack-saas.vercel.app";
+const allowedOrigins = [clientUrl];
+
 app.use(
   cors({
-    origin: "https://stack-saas.vercel.app", // ✅ CHANGE",
-    methods: ["GET", "POST", "PUT", "DELETE"], // ✅ better format
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
@@ -31,8 +44,9 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false, // true only in HTTPS production
+      secure: process.env.NODE_ENV === "production",
       httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 24 * 60 * 60 * 1000,
     },
   })

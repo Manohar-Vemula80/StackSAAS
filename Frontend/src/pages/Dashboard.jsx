@@ -24,11 +24,12 @@ export default function Dashboard() {
   const { credits, deductCredits } = useCredit();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const API_BASE = import.meta.env.VITE_API_URL || "";
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login/success`, {
+        const response = await fetch(`${API_BASE}/auth/login/success`, {
           method: "GET",
           credentials: "include",
           headers: {
@@ -56,17 +57,17 @@ export default function Dashboard() {
   }, [navigate]);
 
   useEffect(() => {
-  fetch("VITE_API_URL/api/recent")
-    .then((res) => res.json())
-    .then((data) => {
-      console.log("RECENT:", data);
+    fetch(`${API_BASE}/api/recent`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("RECENT:", data);
 
-      if (Array.isArray(data)) {
-        setRecent(data);
-      } else {
-        setRecent([]); // 🔥 safety
-      }
-    })
+        if (Array.isArray(data)) {
+          setRecent(data);
+        } else {
+          setRecent([]); // 🔥 safety
+        }
+      })
     .catch((err) => {
       console.error(err);
       setRecent([]); // 🔥 crash prevent
@@ -83,7 +84,7 @@ export default function Dashboard() {
 
     try {
       const res = await fetch(
-        `VITE_API_URL/api/search?query=${value}`
+        `${API_BASE}/api/search?query=${value}`
       );
       const data = await res.json();
 
@@ -99,47 +100,41 @@ export default function Dashboard() {
   };
 
   // 🚀 ANALYZE STOCK API
- const handleAnalyze = async () => {
-  if (!stock) return alert("Enter stock name");
+  const handleAnalyze = async () => {
+    if (!stock) return alert("Enter stock name");
 
-  if (!deductCredits()) {
-    navigate("/payment");
-    return;
-  }
+    if (!deductCredits()) {
+      navigate("/payment");
+      return;
+    }
 
-  try {
-    const res = await fetch(
-      "VITE_API_URL/api/analyze",
-      {
+    try {
+      const res = await fetch(`${API_BASE}/api/analyze`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        // credentials: "include",
-        body: JSON.stringify({ symbol : stock }) 
+        body: JSON.stringify({ symbol: stock }),
+      });
+      const data = await res.json();
+
+      if (!data || data.error) {
+        alert("Analysis failed");
+        return;
       }
-    );
 
-    const data = await res.json();
+      // ✅ save + persist
+      setRecent((prev) => {
+        const updated = [data.data, ...prev];
+        localStorage.setItem("recent", JSON.stringify(updated));
+        return updated;
+      });
 
-    if (!data || data.error) {
-      alert("Analysis failed");
-      return;
+      navigate("/result", { state: { result: data.data } });
+    } catch (err) {
+      console.error(err);
     }
-
-    // ✅ save + persist
-    setRecent((prev) => {
-       const updated = [data.data, ...prev];
-      localStorage.setItem("recent", JSON.stringify(updated));
-      return updated;
-    });
-
-    navigate("/result", { state: { result: data.data } });
-
-  } catch (err) {
-    console.error(err);
-  }
-};
+  };
 
   if (loading) {
     return (

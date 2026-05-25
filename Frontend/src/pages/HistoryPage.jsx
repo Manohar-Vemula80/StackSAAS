@@ -3,12 +3,13 @@ import { useEffect, useState } from "react";
 
 export default function HistoryPage() {
   const navigate = useNavigate();
+  const API_BASE = import.meta.env.VITE_API_URL || "";
 
   const [historyData, setHistoryData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("VITE_API_URL/api/recent")
+    fetch(`${API_BASE}/api/recent`)
       .then((res) => res.json())
       .then((data) => {
         setHistoryData(Array.isArray(data) ? data : []);
