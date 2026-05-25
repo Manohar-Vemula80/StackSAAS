@@ -12,13 +12,16 @@ const authRoute = require("./Route/auth");
 
 const app = express();
 
-if (process.env.NODE_ENV === "production") {
+const SERVER_URL = process.env.SERVER_URL || "https://stacksaas.onrender.com";
+const CLIENT_URL = process.env.CLIENT_URL || "https://stack-saas.vercel.app";
+const isProd = process.env.NODE_ENV === "production" || !!process.env.SERVER_URL;
+
+if (isProd) {
   app.set("trust proxy", 1);
 }
 
 // ✅ CORS
-const clientUrl = process.env.CLIENT_URL || "https://stack-saas.vercel.app";
-const allowedOrigins = [clientUrl];
+const allowedOrigins = [CLIENT_URL];
 
 app.use(
   cors({
@@ -31,8 +34,10 @@ app.use(
     },
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+app.options("*", cors({ origin: allowedOrigins, credentials: true }));
 
 // ✅ BODY PARSER
 app.use(express.json());
@@ -44,9 +49,9 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === "production",
+      secure: isProd,
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      sameSite: isProd ? "none" : "lax",
       maxAge: 24 * 60 * 60 * 1000,
     },
   })

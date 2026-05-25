@@ -1,6 +1,8 @@
 import { Routes, Route } from 'react-router-dom'
 import './App.css'
 import axios from 'axios'
+
+axios.defaults.withCredentials = true;
 // import Otp from './auth/otp'
 // import Register from './auth/register'
 import Dashboard from './pages/Dashboard'
@@ -25,8 +27,8 @@ function App() {
 	const getUser = async () => {
 		try {
 			const url = `${API_BASE}/auth/login/success`;
-			const { data } = await axios.get(url, { withCredentials: true });
-			setUser(data.user._json);
+			const { data } = await axios.get(url);
+			setUser(data.user);
 		} catch (err) {
 			console.log(err);
 		}
