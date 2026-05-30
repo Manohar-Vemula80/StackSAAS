@@ -20,11 +20,16 @@ export default function Dashboard() {
   const [suggestions, setSuggestions] = useState([]);
   const [recent, setRecent] = useState([]);
   const { credits, deductCredits } = useCredit();
-  const { user, setUser, loading: userLoading } = useUser();
+  const { user, loading: userLoading } = useUser();
   const API_BASE = import.meta.env.VITE_API_URL || "https://stacksaas.onrender.com";
  
 
   useEffect(() => {
+    if (!userLoading && !user) {
+      navigate("/login");
+      return;
+    }
+
     if (!user) {
       setRecent([]);
       return;
@@ -52,7 +57,7 @@ export default function Dashboard() {
     };
 
     fetchRecent();
-  }, [user]);
+  }, [user, userLoading, navigate]);
   // 🔍 SEARCH STOCK API
   const handleSearch = async (value) => {
     setStock(value);
