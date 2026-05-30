@@ -37,7 +37,21 @@ function Login() {
 
 			const data = await response.json();
 			if (data.success) {
-				if (setUser) setUser(data.user);
+				let userData = data.user;
+				try {
+					const statusRes = await fetch(`${API_BASE}/auth/status`, {
+						method: "GET",
+						credentials: "include",
+						headers: { Accept: "application/json" },
+					});
+					const statusData = await statusRes.json();
+					if (statusData.authenticated && statusData.user) {
+						userData = statusData.user;
+					}
+				} catch (statusErr) {
+					console.error("Status fetch after login failed:", statusErr);
+				}
+				if (setUser) setUser(userData);
 				alert("Login successful!");
 				navigate("/");
 			} else {
