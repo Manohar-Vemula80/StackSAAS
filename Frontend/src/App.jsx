@@ -1,8 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
 import './App.css'
-import axios from 'axios'
-
-axios.defaults.withCredentials = true;
 // import Otp from './auth/otp'
 // import Register from './auth/register'
 import Dashboard from './pages/Dashboard'
@@ -14,29 +11,10 @@ import SuccessPage from './pages/succespage'
 import HistoryPage from './pages/HistoryPage'
 import ProfilePage from './pages/profilepage'
 import SettingsPage from './pages/settingpage'
-import { useState, useEffect } from 'react'
 import Signup from './auth/register'
 import Login from './auth/login'
 
-
-
 function App() {
-  const [user, setUser] = useState(null);
-  const API_BASE = import.meta.env.VITE_API_URL || "https://stacksaas.onrender.com";
-
-	const getUser = async () => {
-		try {
-			const url = `${API_BASE}/auth/login/success`;
-			const { data } = await axios.get(url);
-			setUser(data.user);
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
-	useEffect(() => {
-		getUser();
-	}, []);
   return (
     <Routes>
       
