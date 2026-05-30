@@ -12,7 +12,7 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch(`${API_BASE}/auth/login/success`, {
+        const response = await fetch(`${API_BASE}/auth/status`, {
           method: "GET",
           credentials: "include",
           headers: {
@@ -23,7 +23,7 @@ export default function ProfilePage() {
 
         const data = await response.json();
 
-        if (data.error) {
+        if (data.error || data.authenticated === false) {
           navigate("/login");
         } else {
           setUser(data.user);

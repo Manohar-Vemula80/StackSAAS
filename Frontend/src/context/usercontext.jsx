@@ -11,7 +11,7 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch(`${API_BASE}/auth/login/success`, {
+        const res = await fetch(`${API_BASE}/auth/status`, {
           method: "GET",
           credentials: "include",
           headers: { Accept: "application/json" },

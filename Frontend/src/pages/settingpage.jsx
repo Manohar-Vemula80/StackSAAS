@@ -19,7 +19,7 @@ export default function SettingsPage() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch(`${API_BASE}/auth/login/success`, {
+        const response = await fetch(`${API_BASE}/auth/status`, {
           method: "GET",
           credentials: "include",
           headers: {
@@ -29,7 +29,7 @@ export default function SettingsPage() {
         });
 
         const data = await response.json();
-        if (data.error) {
+        if (data.error || data.authenticated === false) {
           navigate("/login");
           return;
         }
