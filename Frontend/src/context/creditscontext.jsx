@@ -7,12 +7,7 @@ const CreditContext = createContext();
 
 // provider
 export const CreditProvider = ({ children }) => {
-
-  // 🔥 LOAD FROM LOCAL STORAGE
-  const [credits, setCredits] = useState(() => {
-    const saved = localStorage.getItem("credits");
-    return saved ? Number(saved) : 10;
-  });
+  const [credits, setCredits] = useState(0);
 
   useEffect(() => {
     const fetchCredits = async () => {
@@ -36,11 +31,6 @@ export const CreditProvider = ({ children }) => {
 
     fetchCredits();
   }, []);
-
-  // 🔥 SAVE TO LOCAL STORAGE (IMPORTANT)
-  useEffect(() => {
-    localStorage.setItem("credits", credits);
-  }, [credits]);
 
   const addCredits = (amount) => {
     setCredits((prev) => prev + amount);

@@ -54,25 +54,34 @@ export default function Dashboard() {
   }, [navigate]);
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/recent`, {
-      credentials: "include",
-      headers: {
-        Accept: "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
+    if (!user) {
+      setRecent([]);
+      return;
+    }
+
+    const fetchRecent = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/api/recent`, {
+          credentials: "include",
+          headers: {
+            Accept: "application/json",
+          },
+        });
+
+        const data = await response.json();
         if (Array.isArray(data)) {
           setRecent(data);
         } else {
           setRecent([]);
         }
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error(err);
         setRecent([]);
-      });
-  }, []);
+      }
+    };
+
+    fetchRecent();
+  }, [user]);
   // 🔍 SEARCH STOCK API
   const handleSearch = async (value) => {
     setStock(value);
