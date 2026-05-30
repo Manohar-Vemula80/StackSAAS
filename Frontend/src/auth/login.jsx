@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/usercontext";
 
 const API_BASE = import.meta.env.VITE_API_URL || "https://stacksaas.onrender.com";
 
@@ -9,6 +10,7 @@ function Login() {
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
+	const { setUser } = useUser();
 
 	const googleAuth = () => {
 		window.location.href = `${API_BASE}/auth/google`;
@@ -35,6 +37,7 @@ function Login() {
 
 			const data = await response.json();
 			if (data.success) {
+				if (setUser) setUser(data.user);
 				alert("Login successful!");
 				navigate("/");
 			} else {

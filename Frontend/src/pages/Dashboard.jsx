@@ -20,8 +20,23 @@ export default function Dashboard() {
   const [suggestions, setSuggestions] = useState([]);
   const [recent, setRecent] = useState([]);
   const { credits, deductCredits } = useCredit();
-  const { user, loading: userLoading } = useUser();
+  const { user, setUser, loading: userLoading } = useUser();
   const API_BASE = import.meta.env.VITE_API_URL || "https://stacksaas.onrender.com";
+ 
+  const handleLogout = async () => {
+    try {
+      await fetch(`${API_BASE}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+        headers: { Accept: "application/json" },
+      });
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      if (setUser) setUser(null);
+      navigate("/login");
+    }
+  };
  
 
   useEffect(() => {
@@ -168,7 +183,7 @@ export default function Dashboard() {
           </nav>
         </div>
 
-        <div onClick={() => navigate("/login")} className="flex items-center gap-2 cursor-pointer">
+        <div onClick={handleLogout} className="flex items-center gap-2 cursor-pointer">
           <LogOut size={18} /> Logout
         </div>
       </div>

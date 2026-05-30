@@ -49,6 +49,21 @@ export default function SettingsPage() {
 
   const { setUser } = useUser();
 
+  const handleLogout = async () => {
+    try {
+      await fetch(`${API_BASE}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+        headers: { Accept: "application/json" },
+      });
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      if (setUser) setUser(null);
+      navigate("/login");
+    }
+  };
+
   // 🔥 Load theme
   useEffect(() => {
     const saved = localStorage.getItem("theme");
@@ -226,7 +241,7 @@ export default function SettingsPage() {
 
         <button
           className="w-full py-3 bg-red-600 rounded-xl font-semibold hover:bg-red-700 text-white"
-          onClick={() => navigate("/")}
+          onClick={handleLogout}
         >
           Logout
         </button>
