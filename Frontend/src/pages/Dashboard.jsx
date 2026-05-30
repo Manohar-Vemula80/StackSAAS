@@ -17,10 +17,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [stock, setStock] = useState("");
   const [suggestions, setSuggestions] = useState([]);
-  const [recent, setRecent] = useState(() => {
-    const saved = localStorage.getItem("recent");
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [recent, setRecent] = useState([]);
   const { credits, deductCredits } = useCredit();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -57,22 +54,25 @@ export default function Dashboard() {
   }, [navigate]);
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/recent`)
+    fetch(`${API_BASE}/api/recent`, {
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
-        console.log("RECENT:", data);
-
         if (Array.isArray(data)) {
           setRecent(data);
         } else {
-          setRecent([]); // 🔥 safety
+          setRecent([]);
         }
       })
-    .catch((err) => {
-      console.error(err);
-      setRecent([]); // 🔥 crash prevent
-    });
-}, []);
+      .catch((err) => {
+        console.error(err);
+        setRecent([]);
+      });
+  }, []);
   // 🔍 SEARCH STOCK API
   const handleSearch = async (value) => {
     setStock(value);
@@ -103,14 +103,10 @@ export default function Dashboard() {
   const handleAnalyze = async () => {
     if (!stock) return alert("Enter stock name");
 
-    if (!deductCredits()) {
-      navigate("/payment");
-      return;
-    }
-
     try {
       const res = await fetch(`${API_BASE}/api/analyze`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -119,17 +115,16 @@ export default function Dashboard() {
       const data = await res.json();
 
       if (!data || data.error) {
-        alert("Analysis failed");
+        alert(data.error || "Analysis failed");
         return;
       }
 
-      // ✅ save + persist
-      setRecent((prev) => {
-        const updated = [data.data, ...prev];
-        localStorage.setItem("recent", JSON.stringify(updated));
-        return updated;
-      });
+      if (!deductCredits()) {
+        navigate("/payment");
+        return;
+      }
 
+      setRecent((prev) => [data.data, ...prev]);
       navigate("/result", { state: { result: data.data } });
     } catch (err) {
       console.error(err);

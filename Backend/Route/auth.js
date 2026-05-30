@@ -98,11 +98,50 @@ router.get('/status', (req, res) => {
       user: {
         _id: req.user._id,
         name: req.user.name,
-        email: req.user.email
+        email: req.user.email,
+        credits: req.user.credits,
       }
     });
   } else {
     res.json({ authenticated: false });
+  }
+});
+
+// Update current user profile
+router.put('/update', async (req, res) => {
+  try {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ success: false, message: 'Not authenticated' });
+    }
+
+    const { name, email } = req.body;
+    if (!name && !email) {
+      return res.status(400).json({ success: false, message: 'Name or email is required' });
+    }
+
+    if (email && email !== req.user.email) {
+      const existingUser = await User.findOne({ email });
+      if (existingUser && existingUser._id.toString() !== req.user._id.toString()) {
+        return res.status(400).json({ success: false, message: 'Email already in use' });
+      }
+    }
+
+    if (name) req.user.name = name;
+    if (email) req.user.email = email;
+
+    await req.user.save();
+
+    req.login(req.user, (err) => {
+      if (err) {
+        console.error('Re-login after profile update failed:', err);
+        return res.status(500).json({ success: false, message: 'Profile update failed' });
+      }
+
+      res.json({ success: true, user: req.user });
+    });
+  } catch (error) {
+    console.error('Profile update error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 

@@ -9,7 +9,12 @@ export default function HistoryPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/recent`)
+    fetch(`${API_BASE}/api/recent`, {
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         setHistoryData(Array.isArray(data) ? data : []);

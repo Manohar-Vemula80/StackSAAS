@@ -74,8 +74,31 @@ export default function SettingsPage() {
   };
 
   // 🔥 Save settings
-  const handleSave = () => {
-    alert("Settings Saved ✅");
+  const handleSave = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/auth/update`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ name, email }),
+      });
+
+      const data = await response.json();
+      if (!data.success) {
+        alert(data.message || "Save failed");
+        return;
+      }
+
+      setName(data.user.name || "");
+      setEmail(data.user.email || "");
+      alert("Profile updated successfully ✅");
+    } catch (error) {
+      console.error("Error saving settings:", error);
+      alert("Unable to save settings");
+    }
   };
 
   // 🔥 Reset settings

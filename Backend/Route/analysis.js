@@ -21,6 +21,17 @@ router.post("/", async (req, res) => {
       return res.json({ error: "Invalid stock" });
     }
 
+    if (!req.user) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    if (req.user.credits <= 0) {
+      return res.status(400).json({ error: "Not enough credits" });
+    }
+
+    req.user.credits -= 1;
+    await req.user.save();
+
     // 🔥 2. DATE
     const now = new Date();
     const weekAgo = new Date();
@@ -97,6 +108,7 @@ Recent news may impact future performance.`;
 
     // 🔥 8. SAVE TO DB (IMPORTANT)
     await Stock.create({
+      user: req.user._id,
       symbol,
       recommendation,
       price,

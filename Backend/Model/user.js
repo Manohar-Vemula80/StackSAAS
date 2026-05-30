@@ -21,6 +21,10 @@ const userSchema = new mongoose.Schema({
       return !this.googleId;
     }
   },
+  credits: {
+    type: Number,
+    default: 10,
+  },
 });
 
 // Hash password before saving

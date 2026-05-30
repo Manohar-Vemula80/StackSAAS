@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 
+const API_BASE = import.meta.env.VITE_API_URL || "https://stacksaas.onrender.com";
+
 // create context
 const CreditContext = createContext();
 
@@ -11,6 +13,29 @@ export const CreditProvider = ({ children }) => {
     const saved = localStorage.getItem("credits");
     return saved ? Number(saved) : 10;
   });
+
+  useEffect(() => {
+    const fetchCredits = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/auth/login/success`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            Accept: "application/json",
+          },
+        });
+
+        const data = await response.json();
+        if (!data.error && typeof data.user?.credits === "number") {
+          setCredits(data.user.credits);
+        }
+      } catch (err) {
+        console.error("Failed to load user credits:", err);
+      }
+    };
+
+    fetchCredits();
+  }, []);
 
   // 🔥 SAVE TO LOCAL STORAGE (IMPORTANT)
   useEffect(() => {

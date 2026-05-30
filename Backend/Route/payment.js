@@ -4,6 +4,7 @@ const Razorpay = require("razorpay");
 const crypto = require("crypto");
 
 const Payment = require("../Model/payment");
+const User = require("../Model/user");
 
 // 🔥 INIT RAZORPAY
 const razorpay = new Razorpay({
@@ -16,6 +17,10 @@ const razorpay = new Razorpay({
 router.post("/create-order", async (req, res) => {
   const { amount, credits } = req.body;
 
+  if (!req.user) {
+    return res.status(401).json({ error: "Not authenticated" });
+  }
+
   try {
     const options = {
       amount: amount * 100, // ₹ → paisa
@@ -27,6 +32,7 @@ router.post("/create-order", async (req, res) => {
 
     // 💾 SAVE DB
     await Payment.create({
+      user: req.user._id,
       orderId: order.id,
       amount,
       credits,
@@ -62,8 +68,6 @@ router.post("/verify", async (req, res) => {
       .digest("hex");
 
     if (expectedSignature === razorpay_signature) {
-
-      // ✅ UPDATE DB
       const payment = await Payment.findOneAndUpdate(
         { orderId: razorpay_order_id },
         {
@@ -73,15 +77,23 @@ router.post("/verify", async (req, res) => {
         { returnDocument: "after" }
       );
 
-      res.json({
-        success: true,
-        credits: payment.credits, // 🔥 IMPORTANT
-      });
+      if (!payment) {
+        return res.status(404).json({ success: false, error: "Payment not found" });
+      }
 
-    } else {
-      res.json({ success: false });
+      if (payment.user) {
+        await User.findByIdAndUpdate(payment.user, {
+          $inc: { credits: payment.credits },
+        });
+      }
+
+      return res.json({
+        success: true,
+        credits: payment.credits,
+      });
     }
 
+    res.json({ success: false });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Verification failed" });

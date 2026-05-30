@@ -44,6 +44,7 @@ export default function PaymentPage() {
         `${API_BASE}/api/payment/create-order`,
         {
           method: "POST",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             amount: selectedPlan.price,
@@ -71,6 +72,7 @@ export default function PaymentPage() {
             `${API_BASE}/api/payment/verify`,
             {
               method: "POST",
+              credentials: "include",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(response),
             }
