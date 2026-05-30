@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCredit } from "../context/creditscontext";
+import { useUser } from "../context/usercontext";
 
 const API_BASE = import.meta.env.VITE_API_URL || "https://stacksaas.onrender.com";
 
@@ -13,6 +14,8 @@ const plans = [
 export default function PaymentPage() {
   const navigate = useNavigate();
   const { addCredits } = useCredit();
+
+  const { user, setUser } = useUser();
 
   const [selectedPlan, setSelectedPlan] = useState(plans[1]);
   const [loading, setLoading] = useState(false);
@@ -84,6 +87,11 @@ export default function PaymentPage() {
 
             // 🔥 ADD CREDITS
             addCredits(verifyData.credits);
+
+            // update global user credits if available
+            if (setUser && user) {
+              setUser({ ...user, credits: (user.credits || 0) + verifyData.credits });
+            }
 
             // 🔥 PASS DATA TO SUCCESS PAGE (MAIN FIX)
             navigate("/success", {

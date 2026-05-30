@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/usercontext";
 
 export default function SettingsPage() {
   const navigate = useNavigate();
@@ -45,6 +46,8 @@ export default function SettingsPage() {
 
     fetchUser();
   }, [navigate]);
+
+  const { setUser } = useUser();
 
   // 🔥 Load theme
   useEffect(() => {
@@ -94,6 +97,8 @@ export default function SettingsPage() {
 
       setName(data.user.name || "");
       setEmail(data.user.email || "");
+      // update global user context so other components refresh
+      if (setUser) setUser(data.user);
       alert("Profile updated successfully ✅");
     } catch (error) {
       console.error("Error saving settings:", error);

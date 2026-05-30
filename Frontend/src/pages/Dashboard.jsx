@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useCredit } from "../context/creditscontext";
 import { useEffect } from "react";
+import { useUser } from "../context/usercontext";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -19,39 +20,9 @@ export default function Dashboard() {
   const [suggestions, setSuggestions] = useState([]);
   const [recent, setRecent] = useState([]);
   const { credits, deductCredits } = useCredit();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { user, setUser, loading: userLoading } = useUser();
   const API_BASE = import.meta.env.VITE_API_URL || "https://stacksaas.onrender.com";
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch(`${API_BASE}/auth/login/success`, {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        });
-
-        const data = await response.json();
-
-        if (data.error) {
-          navigate("/login");
-        } else {
-          setUser(data.user);
-        }
-      } catch (error) {
-        console.error("Error fetching user:", error);
-        navigate("/login");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, [navigate]);
+ 
 
   useEffect(() => {
     if (!user) {
@@ -140,7 +111,7 @@ export default function Dashboard() {
     }
   };
 
-  if (loading) {
+  if (userLoading) {
     return (
       <div className="flex h-screen bg-[#0B0F19] text-white items-center justify-center">
         <div className="text-xl">Loading...</div>

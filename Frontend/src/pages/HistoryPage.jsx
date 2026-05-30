@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useUser } from "../context/usercontext";
 
 export default function HistoryPage() {
   const navigate = useNavigate();
@@ -8,7 +9,15 @@ export default function HistoryPage() {
   const [historyData, setHistoryData] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const { user } = useUser();
+
   useEffect(() => {
+    if (!user) {
+      setHistoryData([]);
+      setLoading(false);
+      return;
+    }
+
     fetch(`${API_BASE}/api/recent`, {
       credentials: "include",
       headers: {
@@ -24,7 +33,7 @@ export default function HistoryPage() {
         console.error(err);
         setLoading(false);
       });
-  }, []);
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-[#0B0F19] text-white p-6">
