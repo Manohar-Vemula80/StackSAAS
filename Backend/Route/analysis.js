@@ -13,8 +13,10 @@ router.post("/", async (req, res) => {
   const { symbol } = req.body;
 
   try {
+    const normalizedSymbol = symbol.trim().toUpperCase().replace(/\./g, "-");
+
     // 🔥 1. STOCK PRICE
-    const quote = await yahooFinance.quote(symbol);
+    const quote = await yahooFinance.quote(normalizedSymbol);
     const price = quote.regularMarketPrice;
 
     if (!price) {
@@ -126,6 +128,7 @@ Recent news may impact future performance.`;
         history,
         news,
       },
+      credits: req.user.credits,
     });
 
   } catch (err) {

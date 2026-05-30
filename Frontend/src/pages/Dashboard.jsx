@@ -103,6 +103,12 @@ export default function Dashboard() {
   const handleAnalyze = async () => {
     if (!stock) return alert("Enter stock name");
 
+    if (credits <= 0) {
+      alert("You have no credits. Please buy more credits first.");
+      navigate("/payment");
+      return;
+    }
+
     try {
       const res = await fetch(`${API_BASE}/api/analyze`, {
         method: "POST",
@@ -119,15 +125,15 @@ export default function Dashboard() {
         return;
       }
 
-      if (!deductCredits()) {
-        navigate("/payment");
-        return;
+      if (setUser && data.credits != null) {
+        setUser({ ...user, credits: data.credits });
       }
 
       setRecent((prev) => [data.data, ...prev]);
       navigate("/result", { state: { result: data.data } });
     } catch (err) {
-      console.error(err);
+      console.error("Analyze request failed:", err);
+      alert("Analysis failed");
     }
   };
 
