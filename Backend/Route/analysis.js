@@ -31,16 +31,13 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: "Not enough credits" });
     }
 
-    req.user.credits -= 1;
-    await req.user.save();
-
     // 🔥 2. DATE
     const now = new Date();
     const weekAgo = new Date();
     weekAgo.setDate(now.getDate() - 7);
 
     // 🔥 3. HISTORY
-    const historyData = await yahooFinance.chart(symbol, {
+    const historyData = await yahooFinance.chart(normalizedSymbol, {
       period1: weekAgo,
       period2: now,
       interval: "1d",
@@ -107,6 +104,9 @@ Trend: ${trend}.
 Recommendation: ${recommendation}.
 Risk level is ${trend === "uptrend" ? "Low" : "High"}.
 Recent news may impact future performance.`;
+
+    req.user.credits -= 1;
+    await req.user.save();
 
     // 🔥 8. SAVE TO DB (IMPORTANT)
     await Stock.create({
