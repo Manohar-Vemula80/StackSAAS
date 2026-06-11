@@ -18,7 +18,7 @@ export const UserProvider = ({ children }) => {
         });
 
         const data = await res.json();
-        if (!data.error) setUser(data.user || null);
+        if (data.authenticated) setUser(data.user || null);
         else setUser(null);
       } catch (err) {
         console.error("User fetch failed:", err);

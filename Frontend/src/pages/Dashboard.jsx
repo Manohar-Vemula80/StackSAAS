@@ -19,6 +19,7 @@ export default function Dashboard() {
   const [stock, setStock] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [recent, setRecent] = useState([]);
+  const [analyzing, setAnalyzing] = useState(false);
   const { credits, deductCredits } = useCredit();
   const { user, setUser, loading: userLoading } = useUser();
   const API_BASE = import.meta.env.VITE_API_URL || "https://stacksaas.onrender.com";
@@ -109,6 +110,9 @@ export default function Dashboard() {
       return;
     }
 
+    const symbol = stock.trim().toUpperCase();
+    setAnalyzing(true);
+
     try {
       const res = await fetch(`${API_BASE}/api/analyze`, {
         method: "POST",
@@ -116,12 +120,12 @@ export default function Dashboard() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ symbol: stock }),
+        body: JSON.stringify({ symbol }),
       });
       const data = await res.json();
 
-      if (!data || data.error) {
-        alert(data.error || "Analysis failed");
+      if (!res.ok || !data || data.error) {
+        alert(data?.error || "Analysis failed");
         return;
       }
 
@@ -133,7 +137,9 @@ export default function Dashboard() {
       navigate("/result", { state: { result: data.data } });
     } catch (err) {
       console.error("Analyze request failed:", err);
-      alert("Analysis failed");
+      alert("Analysis failed — the server may be waking up. Wait 30 seconds and try again.");
+    } finally {
+      setAnalyzing(false);
     }
   };
 
@@ -253,9 +259,10 @@ export default function Dashboard() {
 
             <button
               onClick={handleAnalyze}
-              className="bg-indigo-600 px-6 rounded-lg hover:bg-indigo-700"
+              disabled={analyzing}
+              className="bg-indigo-600 px-6 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Analyze 🚀
+              {analyzing ? "Analyzing..." : "Analyze 🚀"}
             </button>
           </div>
         </div>

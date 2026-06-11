@@ -5,68 +5,113 @@ const axios = require("axios");
 const YahooFinance = require("yahoo-finance2").default;
 const yahooFinance = new YahooFinance({
   suppressNotices: ["yahooSurvey"],
+  validation: { logErrors: false, logOptionsErrors: false },
 });
 
 const Stock = require("../Model/stock");
 
+function normalizeYahooSymbol(symbol) {
+  const trimmed = symbol.trim().toUpperCase();
+  // US share-class tickers (BRK.A, BF.B) use hyphens on Yahoo; exchange suffixes (BR.TO) keep the dot.
+  if (/\.[A-Z]$/.test(trimmed)) {
+    return trimmed.replace(".", "-");
+  }
+  return trimmed;
+}
+
+function getYahooSymbolCandidates(symbol) {
+  const trimmed = symbol.trim().toUpperCase();
+  const normalized = normalizeYahooSymbol(trimmed);
+  return [...new Set([normalized, trimmed])];
+}
+
+async function fetchQuote(candidates) {
+  let lastError;
+
+  for (const sym of candidates) {
+    try {
+      const quote = await yahooFinance.quote(sym);
+      const price =
+        quote?.regularMarketPrice ?? quote?.regularMarketPreviousClose;
+
+      if (price != null) {
+        return { price, yahooSymbol: sym };
+      }
+    } catch (err) {
+      lastError = err;
+      console.log(`Quote failed for ${sym}:`, err.message);
+    }
+  }
+
+  throw lastError || new Error("Unable to fetch stock price");
+}
+
+async function fetchHistory(yahooSymbol, period1, period2, candidates) {
+  const symbolsToTry = [...new Set([yahooSymbol, ...candidates])];
+
+  for (const sym of symbolsToTry) {
+    try {
+      const historyData = await yahooFinance.chart(sym, {
+        period1,
+        period2,
+        interval: "1d",
+      });
+
+      if (historyData?.quotes?.length) {
+        return historyData.quotes.map((q) => q.close).filter(Boolean);
+      }
+    } catch (err) {
+      console.log(`Chart failed for ${sym}:`, err.message);
+    }
+  }
+
+  return [];
+}
+
 router.post("/", async (req, res) => {
   const { symbol } = req.body;
 
+  if (!symbol || typeof symbol !== "string" || !symbol.trim()) {
+    return res.status(400).json({ error: "Enter a valid stock symbol" });
+  }
+
+  if (!req.user) {
+    return res.status(401).json({ error: "Not authenticated" });
+  }
+
+  if (req.user.credits <= 0) {
+    return res.status(400).json({ error: "Not enough credits" });
+  }
+
+  const displaySymbol = symbol.trim().toUpperCase();
+  const yahooCandidates = getYahooSymbolCandidates(displaySymbol);
+
   try {
-    const normalizedSymbol = symbol.trim().toUpperCase().replace(/\./g, "-");
+    const { price, yahooSymbol } = await fetchQuote(yahooCandidates);
 
-    // 🔥 1. STOCK PRICE
-    const quote = await yahooFinance.quote(normalizedSymbol);
-    const price = quote.regularMarketPrice;
-
-    if (!price) {
-      return res.json({ error: "Invalid stock" });
-    }
-
-    if (!req.user) {
-      return res.status(401).json({ error: "Not authenticated" });
-    }
-
-    if (req.user.credits <= 0) {
-      return res.status(400).json({ error: "Not enough credits" });
-    }
-
-    // 🔥 2. DATE
     const now = new Date();
     const weekAgo = new Date();
     weekAgo.setDate(now.getDate() - 7);
 
-    // 🔥 3. HISTORY
-    const historyData = await yahooFinance.chart(normalizedSymbol, {
-      period1: weekAgo,
-      period2: now,
-      interval: "1d",
-    });
+    const history = await fetchHistory(
+      yahooSymbol,
+      weekAgo,
+      now,
+      yahooCandidates
+    );
 
-    let history = [];
-
-    if (historyData && historyData.quotes) {
-      history = historyData.quotes
-        .map((q) => q.close)
-        .filter(Boolean);
-    }
-
-    // 🔥 4. NEWS
     let news = [];
 
     try {
-      const newsRes = await axios.get(
-        "https://newsapi.org/v2/everything",
-        {
-          params: {
-            q: symbol.split(".")[0],
-            apiKey: process.env.NEWS_API_KEY,
-            pageSize: 5,
-          },
-        }
-      );
+      const newsRes = await axios.get("https://newsapi.org/v2/everything", {
+        params: {
+          q: displaySymbol.split(".")[0],
+          apiKey: process.env.NEWS_API_KEY,
+          pageSize: 5,
+        },
+      });
 
-      news = newsRes.data.articles.map((n) => ({
+      news = (newsRes.data.articles || []).map((n) => ({
         title: n.title,
         source: n.source.name,
         url: n.url,
@@ -75,7 +120,6 @@ router.post("/", async (req, res) => {
       console.log("News API failed (ignored)");
     }
 
-    // 🔥 5. TREND
     let trend = "stable";
 
     if (history.length > 1) {
@@ -87,7 +131,6 @@ router.post("/", async (req, res) => {
     if (trend === "uptrend") recommendation = "BUY";
     if (trend === "downtrend") recommendation = "SELL";
 
-    // 🔥 6. REAL SCORE (NOT RANDOM ❌)
     let score = 50;
 
     if (trend === "uptrend") score += 20;
@@ -95,11 +138,9 @@ router.post("/", async (req, res) => {
     if (news.length > 2) score += 10;
     if (price > 100) score += 10;
 
-    // limit 0-100
     score = Math.max(0, Math.min(100, score));
 
-    // 🔥 7. AI TEXT
-    let aiText = `Stock ${symbol} is trading at ${price}.
+    const aiText = `Stock ${displaySymbol} is trading at ${price}.
 Trend: ${trend}.
 Recommendation: ${recommendation}.
 Risk level is ${trend === "uptrend" ? "Low" : "High"}.
@@ -108,19 +149,17 @@ Recent news may impact future performance.`;
     req.user.credits -= 1;
     await req.user.save();
 
-    // 🔥 8. SAVE TO DB (IMPORTANT)
     await Stock.create({
       user: req.user._id,
-      symbol,
+      symbol: displaySymbol,
       recommendation,
       price,
-      score, // ✅ NOW SAVED
+      score,
     });
 
-    // 🔥 FINAL RESPONSE
     res.json({
       data: {
-        symbol,
+        symbol: displaySymbol,
         score,
         recommendation,
         analysis: aiText,
@@ -130,13 +169,16 @@ Recent news may impact future performance.`;
       },
       credits: req.user.credits,
     });
-
   } catch (err) {
-    console.error("ERROR:", err.response?.data || err.message);
+    console.error("Analysis error:", err.response?.data || err.message);
 
-    res.json({
-      error: "Analysis failed",
-    });
+    const message =
+      err.name === "FailedYahooValidationError" ||
+      err.message?.includes("No data found")
+        ? "Unable to fetch market data for this symbol"
+        : "Analysis failed";
+
+    res.status(500).json({ error: message });
   }
 });
 
