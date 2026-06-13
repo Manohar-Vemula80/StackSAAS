@@ -1,24 +1,36 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useUser } from "./usercontext";
 
-const API_BASE = import.meta.env.VITE_API_URL || "https://stacksaas.onrender.com";
-
 // create context
 const CreditContext = createContext();
 
 // provider
 export const CreditProvider = ({ children }) => {
-  const [credits, setCredits] = useState(0);
-  const { user } = useUser();
+  const [credits, setCredits] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("credits");
+      return saved ? Number(saved) : 0;
+    }
+    return 0;
+  });
+  const { user, loading } = useUser();
 
   useEffect(() => {
+    if (loading) return;
+
     if (!user) {
       setCredits(0);
       return;
     }
 
     setCredits(typeof user.credits === "number" ? user.credits : 0);
-  }, [user]);
+  }, [user, loading]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("credits", credits.toString());
+    }
+  }, [credits]);
 
   const addCredits = (amount) => {
     setCredits((prev) => prev + amount);

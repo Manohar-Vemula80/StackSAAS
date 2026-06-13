@@ -81,15 +81,26 @@ router.post("/verify", async (req, res) => {
         return res.status(404).json({ success: false, error: "Payment not found" });
       }
 
+      let updatedUser = null;
       if (payment.user) {
-        await User.findByIdAndUpdate(payment.user, {
-          $inc: { credits: payment.credits },
-        });
+        updatedUser = await User.findByIdAndUpdate(
+          payment.user,
+          { $inc: { credits: payment.credits } },
+          { new: true }
+        );
       }
 
       return res.json({
         success: true,
         credits: payment.credits,
+        user: updatedUser
+          ? {
+              _id: updatedUser._id,
+              name: updatedUser.name,
+              email: updatedUser.email,
+              credits: updatedUser.credits,
+            }
+          : null,
       });
     }
 

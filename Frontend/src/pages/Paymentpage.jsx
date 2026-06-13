@@ -89,11 +89,13 @@ export default function PaymentPage() {
             addCredits(verifyData.credits);
 
             // update global user credits if available
-            if (setUser && user) {
+            if (verifyData.user) {
+              setUser(verifyData.user);
+            } else if (setUser && user) {
               setUser({ ...user, credits: (user.credits || 0) + verifyData.credits });
             }
 
-            // 🔥 PASS DATA TO SUCCESS PAGE (MAIN FIX)
+            // 🔥 PASS DATA TO SUCCESS PAGE
             navigate("/success", {
               state: {
                 credits: verifyData.credits,
