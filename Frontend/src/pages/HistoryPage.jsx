@@ -2,6 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useUser } from "../context/usercontext";
 
+const getHistoryKey = (userId) => `history_${userId}`;
+
 export default function HistoryPage() {
   const navigate = useNavigate();
   const API_BASE = import.meta.env.VITE_API_URL || "https://stacksaas.onrender.com";
@@ -9,15 +11,27 @@ export default function HistoryPage() {
   const [historyData, setHistoryData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
 
   useEffect(() => {
+    if (userLoading) return;
+
     if (!user) {
       setHistoryData([]);
       setLoading(false);
       return;
     }
 
+    const saved = typeof window !== "undefined" ? localStorage.getItem(getHistoryKey(user._id)) : null;
+    if (saved) {
+      try {
+        setHistoryData(JSON.parse(saved));
+      } catch (err) {
+        console.warn("Failed to parse saved user history:", err);
+      }
+    }
+
+    setLoading(true);
     fetch(`${API_BASE}/api/recent`, {
       credentials: "include",
       headers: {
@@ -26,14 +40,19 @@ export default function HistoryPage() {
     })
       .then((res) => res.json())
       .then((data) => {
-        setHistoryData(Array.isArray(data) ? data : []);
-        setLoading(false);
+        const parsed = Array.isArray(data) ? data : [];
+        setHistoryData(parsed);
+        if (typeof window !== "undefined") {
+          localStorage.setItem(getHistoryKey(user._id), JSON.stringify(parsed));
+        }
       })
       .catch((err) => {
         console.error(err);
+      })
+      .finally(() => {
         setLoading(false);
       });
-  }, [user]);
+  }, [user, userLoading]);
 
   return (
     <div className="min-h-screen bg-[#0B0F19] text-white p-6">

@@ -14,6 +14,8 @@ import { useCredit } from "../context/creditscontext";
 import { useEffect } from "react";
 import { useUser } from "../context/usercontext";
 
+const getRecentKey = (userId) => `recent_${userId}`;
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const [stock, setStock] = useState("");
@@ -51,6 +53,17 @@ export default function Dashboard() {
       return;
     }
 
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(getRecentKey(user._id));
+      if (saved) {
+        try {
+          setRecent(JSON.parse(saved));
+        } catch (err) {
+          console.warn("Failed to parse saved recent history:", err);
+        }
+      }
+    }
+
     const fetchRecent = async () => {
       try {
         const response = await fetch(`${API_BASE}/api/recent`, {
@@ -63,6 +76,9 @@ export default function Dashboard() {
         const data = await response.json();
         if (Array.isArray(data)) {
           setRecent(data);
+          if (typeof window !== "undefined") {
+            localStorage.setItem(getRecentKey(user._id), JSON.stringify(data));
+          }
         } else {
           setRecent([]);
         }
