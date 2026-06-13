@@ -22,15 +22,6 @@ export default function HistoryPage() {
       return;
     }
 
-    const saved = typeof window !== "undefined" ? localStorage.getItem(getHistoryKey(user._id)) : null;
-    if (saved) {
-      try {
-        setHistoryData(JSON.parse(saved));
-      } catch (err) {
-        console.warn("Failed to parse saved user history:", err);
-      }
-    }
-
     setLoading(true);
     fetch(`${API_BASE}/api/recent`, {
       credentials: "include",
@@ -40,14 +31,11 @@ export default function HistoryPage() {
     })
       .then((res) => res.json())
       .then((data) => {
-        const parsed = Array.isArray(data) ? data : [];
-        setHistoryData(parsed);
-        if (typeof window !== "undefined") {
-          localStorage.setItem(getHistoryKey(user._id), JSON.stringify(parsed));
-        }
+        setHistoryData(Array.isArray(data) ? data : []);
       })
       .catch((err) => {
         console.error(err);
+        setHistoryData([]);
       })
       .finally(() => {
         setLoading(false);
