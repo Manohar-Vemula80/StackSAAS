@@ -42,6 +42,29 @@ export default function Dashboard() {
   };
  
 
+  const fetchRecent = async () => {
+    if (!user) return;
+
+    try {
+      const response = await fetch(`${API_BASE}/api/recent`, {
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setRecent(data);
+      } else {
+        setRecent([]);
+      }
+    } catch (err) {
+      console.error(err);
+      setRecent([]);
+    }
+  };
+
   useEffect(() => {
     if (!userLoading && !user) {
       navigate("/login");
@@ -53,29 +76,9 @@ export default function Dashboard() {
       return;
     }
 
-    const fetchRecent = async () => {
-      try {
-        const response = await fetch(`${API_BASE}/api/recent`, {
-          credentials: "include",
-          headers: {
-            Accept: "application/json",
-          },
-        });
-
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          setRecent(data);
-        } else {
-          setRecent([]);
-        }
-      } catch (err) {
-        console.error(err);
-        setRecent([]);
-      }
-    };
-
     fetchRecent();
   }, [user, userLoading, navigate]);
+
   // 🔍 SEARCH STOCK API
   const handleSearch = async (value) => {
     setStock(value);
@@ -135,7 +138,11 @@ export default function Dashboard() {
         setUser({ ...user, credits: data.credits });
       }
 
+      // Update the visual credit count immediately
+      deductCredits();
+
       setRecent((prev) => [data.data, ...prev]);
+      fetchRecent();
       navigate("/result", { state: { result: data.data } });
     } catch (err) {
       console.error("Analyze request failed:", err);
