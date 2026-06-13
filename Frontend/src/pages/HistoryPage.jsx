@@ -2,8 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useUser } from "../context/usercontext";
 
-const getHistoryKey = (userId) => `history_${userId}`;
-
 export default function HistoryPage() {
   const navigate = useNavigate();
   const API_BASE = import.meta.env.VITE_API_URL || "https://stacksaas.onrender.com";

@@ -14,8 +14,6 @@ import { useCredit } from "../context/creditscontext";
 import { useEffect } from "react";
 import { useUser } from "../context/usercontext";
 
-const getRecentKey = (userId) => `recent_${userId}`;
-
 export default function Dashboard() {
   const navigate = useNavigate();
   const [stock, setStock] = useState("");
@@ -139,11 +137,8 @@ export default function Dashboard() {
         setUser({ ...user, credits: data.credits });
       }
 
-      // Update the visual credit count immediately
-      deductCredits();
-
-      setRecent((prev) => [data.data, ...prev]);
-      fetchRecent();
+      // Refresh user-specific recent history after a successful analysis.
+      await fetchRecent();
       navigate("/result", { state: { result: data.data } });
     } catch (err) {
       console.error("Analyze request failed:", err);
