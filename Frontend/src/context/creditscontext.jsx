@@ -4,38 +4,37 @@ import { useUser } from "./usercontext";
 // create context
 const CreditContext = createContext();
 
+const getCreditsKey = (userId) => `credits_${userId}`;
+
 // provider
 export const CreditProvider = ({ children }) => {
-  const [credits, setCredits] = useState(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("credits");
-      return saved ? Number(saved) : 0;
-    }
-    return 0;
-  });
+  const [credits, setCredits] = useState(0);
   const { user, loading } = useUser();
 
   useEffect(() => {
     if (loading) return;
 
-    if (user && typeof user.credits === "number") {
+    if (!user) {
+      setCredits(0);
+      return;
+    }
+
+    if (typeof user.credits === "number") {
       setCredits(user.credits);
       return;
     }
 
     if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("credits");
-      if (saved !== null) {
-        setCredits(Number(saved));
-      }
+      const saved = localStorage.getItem(getCreditsKey(user._id));
+      setCredits(saved !== null ? Number(saved) : 0);
     }
   }, [user, loading]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("credits", credits.toString());
-    }
-  }, [credits]);
+    if (typeof window === "undefined" || !user) return;
+
+    localStorage.setItem(getCreditsKey(user._id), credits.toString());
+  }, [credits, user]);
 
   const addCredits = (amount) => {
     setCredits((prev) => prev + amount);
