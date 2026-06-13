@@ -18,12 +18,17 @@ export const CreditProvider = ({ children }) => {
   useEffect(() => {
     if (loading) return;
 
-    if (!user) {
-      setCredits(0);
+    if (user && typeof user.credits === "number") {
+      setCredits(user.credits);
       return;
     }
 
-    setCredits(typeof user.credits === "number" ? user.credits : 0);
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("credits");
+      if (saved !== null) {
+        setCredits(Number(saved));
+      }
+    }
   }, [user, loading]);
 
   useEffect(() => {
