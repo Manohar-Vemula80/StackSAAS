@@ -37,6 +37,7 @@ export default function Dashboard() {
       console.error("Logout failed:", error);
     } finally {
       if (setUser) setUser(null);
+      setRecent([]);
       navigate("/login");
     }
   };
