@@ -38,7 +38,12 @@ export const CreditProvider = ({ children }) => {
   }, [credits, user]);
 
   const addCredits = (amount) => {
-    setCredits((prev) => prev + amount);
+    setCredits((prev) => prev + Number(amount));
+  };
+
+  const updateCredits = (value) => {
+    const parsed = Number(value);
+    setCredits(Number.isNaN(parsed) ? 0 : parsed);
   };
 
   const deductCredits = () => {
@@ -48,7 +53,7 @@ export const CreditProvider = ({ children }) => {
   };
 
   return (
-    <CreditContext.Provider value={{ credits, addCredits, deductCredits }}>
+    <CreditContext.Provider value={{ credits, addCredits, deductCredits, updateCredits }}>
       {children}
     </CreditContext.Provider>
   );

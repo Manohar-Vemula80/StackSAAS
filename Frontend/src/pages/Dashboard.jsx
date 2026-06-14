@@ -20,7 +20,7 @@ export default function Dashboard() {
   const [suggestions, setSuggestions] = useState([]);
   const [recent, setRecent] = useState([]);
   const [analyzing, setAnalyzing] = useState(false);
-  const { credits, deductCredits } = useCredit();
+  const { credits, deductCredits, updateCredits } = useCredit();
   const { user, setUser, loading: userLoading } = useUser();
   const API_BASE = import.meta.env.VITE_API_URL || "https://stacksaas.onrender.com";
  
@@ -134,7 +134,9 @@ export default function Dashboard() {
       }
 
       if (setUser && data.credits != null) {
-        setUser({ ...user, credits: Number(data.credits) });
+        const normalizedCredits = Number(data.credits);
+        setUser({ ...user, credits: normalizedCredits });
+        updateCredits(normalizedCredits);
       }
 
       // Refresh user-specific recent history after a successful analysis.
