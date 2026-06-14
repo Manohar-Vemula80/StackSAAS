@@ -116,6 +116,8 @@ export default function Dashboard() {
 
     const symbol = stock.trim().toUpperCase();
     setAnalyzing(true);
+    const beforeCredits = credits;
+    let updatedLocally = false;
 
     try {
       const res = await fetch(`${API_BASE}/api/analyze`, {
@@ -133,16 +135,37 @@ export default function Dashboard() {
         return;
       }
 
-      if (setUser && data.credits != null) {
-        const normalizedCredits = Number(data.credits);
-        setUser({ ...user, credits: normalizedCredits });
-        updateCredits(normalizedCredits);
+      if (setUser) {
+        if (data.credits != null) {
+          const normalizedCredits = Number(data.credits);
+          if (!Number.isNaN(normalizedCredits)) {
+            setUser({ ...user, credits: normalizedCredits });
+            updateCredits(normalizedCredits);
+            updatedLocally = true;
+          } else {
+            deductCredits();
+            updatedLocally = true;
+            setUser({ ...user, credits: Math.max(0, Number(user?.credits || 0) - 1) });
+          }
+        } else {
+          deductCredits();
+          updatedLocally = true;
+          setUser({ ...user, credits: Math.max(0, Number(user?.credits || 0) - 1) });
+        }
+      }
+
+      if (!updatedLocally) {
+        deductCredits();
       }
 
       // Refresh user-specific recent history after a successful analysis.
       await fetchRecent();
       navigate("/result", { state: { result: data.data } });
     } catch (err) {
+      if (updatedLocally) {
+        updateCredits(beforeCredits);
+        if (setUser) setUser({ ...user, credits: beforeCredits });
+      }
       console.error("Analyze request failed:", err);
       alert("Analysis failed — the server may be waking up. Wait 30 seconds and try again.");
     } finally {
