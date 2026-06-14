@@ -19,8 +19,9 @@ export const CreditProvider = ({ children }) => {
       return;
     }
 
-    if (typeof user.credits === "number") {
-      setCredits(user.credits);
+    const parsedCredits = Number(user.credits);
+    if (!Number.isNaN(parsedCredits)) {
+      setCredits(parsedCredits);
       return;
     }
 

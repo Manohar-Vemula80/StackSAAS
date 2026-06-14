@@ -134,7 +134,7 @@ export default function Dashboard() {
       }
 
       if (setUser && data.credits != null) {
-        setUser({ ...user, credits: data.credits });
+        setUser({ ...user, credits: Number(data.credits) });
       }
 
       // Refresh user-specific recent history after a successful analysis.
