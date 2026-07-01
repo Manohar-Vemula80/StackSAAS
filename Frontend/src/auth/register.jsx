@@ -54,37 +54,37 @@ function Signup() {
 	};
 
 	return (
-		<div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+		<div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4 py-10">
 			
-			<h1 className="text-[40px] font-semibold text-[#2c444e] relative flex items-center justify-center after:content-[''] after:w-[450px] after:h-[4px] after:bg-[#2c444e] after:absolute after:bottom-[-20px] after:rounded-sm">
+			<h1 className="text-[40px] font-semibold text-[#2c444e] relative flex items-center justify-center after:content-[''] after:w-[250px] after:h-[4px] after:bg-[#2c444e] after:absolute after:bottom-[-20px] after:rounded-sm">
 				Sign up Form
 			</h1>
 
-			<div className="flex mt-[45px] w-[800px] h-[450px] bg-white shadow-[3px_4px_36px_-6px_rgba(0,0,0,0.4)] rounded-[50px] overflow-hidden">
+			<div className="flex mt-[45px] w-full max-w-5xl min-h-[500px] flex-col overflow-hidden rounded-[50px] bg-white shadow-[3px_4px_36px_-6px_rgba(0,0,0,0.4)] md:flex-row md:h-[450px]">
 				
 				{/* Left Section */}
-				<div className="flex-[1.5] relative overflow-hidden rounded-l-[50px]">
+				<div className="relative overflow-hidden rounded-t-[50px] bg-indigo-600 md:rounded-l-[50px] md:rounded-tr-none h-56 md:h-auto md:flex-[1.5]">
 					<img
-						className="w-[160%] absolute  top-[50px]"
+						className="absolute inset-0 h-full w-full object-cover"
 						src="./images/signup.jpg"
 						alt="signup"
 					/>
 				</div>
 
 				{/* Right Section */}
-				<div className="flex-[2] flex flex-col items-center justify-center">
+				<div className="flex-[2] flex flex-col items-center justify-center px-6 py-8">
 					
 					<h2 className="text-[25px] font-normal text-[#2c444e] mb-[20px]">
 						Create Account
 					</h2>
 
-					<form onSubmit={handleRegister} className="w-full flex flex-col items-center">
+					<form onSubmit={handleRegister} className="w-full max-w-md flex flex-col gap-4">
 						<input
 							type="text"
 							placeholder="Full Name"
 							value={name}
 							onChange={(e) => setName(e.target.value)}
-							className="w-[320px] h-[35px] p-[5px] my-[5px] outline-none border border-[#2c444e] rounded text-[13px]"
+							className="w-full h-12 p-3 rounded-lg border border-[#2c444e] text-sm outline-none"
 							required
 						/>
 
@@ -93,7 +93,7 @@ function Signup() {
 							placeholder="Email Address"
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
-							className="w-[320px] h-[35px] p-[5px] my-[5px] outline-none border border-[#2c444e] rounded text-[13px]"
+							className="w-full h-12 p-3 rounded-lg border border-[#2c444e] text-sm outline-none"
 							required
 						/>
 
@@ -102,7 +102,7 @@ function Signup() {
 							placeholder="Password"
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
-							className="w-[320px] h-[35px] p-[5px] my-[5px] outline-none border border-[#2c444e] rounded text-[13px]"
+							className="w-full h-12 p-3 rounded-lg border border-[#2c444e] text-sm outline-none"
 							required
 							minLength={6}
 						/>
@@ -110,17 +110,17 @@ function Signup() {
 						<button
 							type="submit"
 							disabled={loading}
-							className="text-[18px] font-medium py-[12px] px-[25px] text-white bg-[#ffc801] rounded-[12px] mt-[10px] cursor-pointer disabled:opacity-50"
+							className="w-full h-12 rounded-lg bg-[#ffc801] text-white text-[18px] font-medium transition disabled:opacity-50"
 						>
 							{loading ? "Creating Account..." : "Sign Up"}
 						</button>
 					</form>
 
-					<p className="text-[14px] text-[#2c444e] my-[5px]">or</p>
+					<p className="text-[14px] text-[#2c444e]">or</p>
 
 					<button
 						onClick={googleAuth}
-						className="w-[230px] h-[40px] rounded-[5px] bg-white shadow-md text-[16px] font-medium mb-[20px] text-[#2c444e] cursor-pointer flex items-center justify-center"
+						className="w-full max-w-md h-12 rounded-lg bg-white shadow-md text-[16px] font-medium mb-5 text-[#2c444e] cursor-pointer flex items-center justify-center"
 					>
 						<img
 							src="./images/google.png"

@@ -143,7 +143,7 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-white text-black dark:bg-[#0B0F19] dark:text-white p-6">
 
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
         <h1 className="text-2xl font-bold">⚙️ Settings</h1>
 
         <button
@@ -217,7 +217,7 @@ export default function SettingsPage() {
       </div>
 
       {/* 🔥 Actions */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <button
           onClick={handleSave}
           className="py-3 bg-indigo-600 rounded-xl font-semibold text-white"

@@ -127,7 +127,7 @@ export default function PaymentPage() {
 
   return (
     <div className="min-h-screen bg-[#0B0F19] text-white p-6 flex justify-center">
-      <div className="w-full max-w-5xl grid md:grid-cols-2 gap-8">
+      <div className="w-full max-w-5xl grid gap-8 md:grid-cols-2">
 
         {/* LEFT */}
         <div>
@@ -156,21 +156,23 @@ export default function PaymentPage() {
 
           <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
 
-          <div className="flex justify-between">
-            <span>Credits</span>
-            <span>{selectedPlan.credits}</span>
-          </div>
+          <div className="grid gap-4 text-sm">
+            <div className="flex justify-between">
+              <span>Credits</span>
+              <span>{selectedPlan.credits}</span>
+            </div>
 
-          <div className="flex justify-between">
-            <span>Price</span>
-            <span>₹{selectedPlan.price}</span>
-          </div>
+            <div className="flex justify-between">
+              <span>Price</span>
+              <span>₹{selectedPlan.price}</span>
+            </div>
 
-          <div className="border-t border-gray-700 my-4"></div>
+            <div className="border-t border-gray-700"></div>
 
-          <div className="flex justify-between font-bold">
-            <span>Total</span>
-            <span>₹{selectedPlan.price}</span>
+            <div className="flex justify-between font-bold">
+              <span>Total</span>
+              <span>₹{selectedPlan.price}</span>
+            </div>
           </div>
 
           <button
