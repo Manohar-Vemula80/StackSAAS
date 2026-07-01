@@ -44,7 +44,7 @@ export default function HistoryPage() {
     <div className="min-h-screen bg-[#0B0F19] text-white p-6">
 
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+      <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">📜 Analysis History</h1>
 
         <button
@@ -78,7 +78,7 @@ export default function HistoryPage() {
                   state: { result: item },
                 })
               }
-              className="bg-[#111827] p-5 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center cursor-pointer hover:bg-[#1F2937] transition gap-4"
+              className="bg-[#111827] p-5 rounded-xl flex justify-between items-center cursor-pointer hover:bg-[#1F2937] transition"
             >
               <div>
                 <h2 className="text-lg font-semibold">

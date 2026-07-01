@@ -55,7 +55,7 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-[#0B0F19] text-white p-6">
 
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+      <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">👤 Profile</h1>
 
         <button
@@ -67,7 +67,7 @@ export default function ProfilePage() {
       </div>
 
       {/* User Info */}
-      <div className="bg-[#111827] p-6 rounded-xl mb-6 flex flex-col gap-4 sm:flex-row sm:items-center">
+      <div className="bg-[#111827] p-6 rounded-xl mb-6 flex items-center gap-4">
         <div className="w-14 h-14 rounded-full bg-gray-500 flex items-center justify-center text-xl">
           {user.name ? user.name.charAt(0).toUpperCase() : "U"}
         </div>
@@ -84,7 +84,7 @@ export default function ProfilePage() {
           ⚠️ Risk Preference
         </h3>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-4">
 
           {["low", "medium", "high"].map((level) => (
             <div

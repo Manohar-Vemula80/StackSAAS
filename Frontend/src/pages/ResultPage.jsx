@@ -70,7 +70,7 @@ export default function ResultPage() {
     <div className="min-h-screen bg-[#0B0F19] text-white p-6">
 
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+      <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold">
           📊 {symbol} Analysis
         </h1>
@@ -84,7 +84,7 @@ export default function ResultPage() {
       </div>
 
       {/* Score + Recommendation */}
-      <div className="grid gap-6 md:grid-cols-2 mb-6">
+      <div className="grid md:grid-cols-2 gap-6 mb-6">
 
         <div className="bg-[#111827] p-6 rounded-xl">
           <p className="text-gray-400">Overall Score</p>
