@@ -1,3 +1,51 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@media (max-width: 768px) {
+  .header-top {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  header h1 {
+    font-size: 1.5rem;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  nav {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  nav.hidden {
+    display: none;
+  }
+
+  nav.show {
+    display: flex;
+  }
+
+  .container {
+    padding: 15px;
+  }
+
+  .content {
+    width: 100%;
+    padding: 15px;
+  }
+
+  img {
+    margin-top: 15px;
+  }
+
+  footer {
+    font-size: 0.8rem;
+    padding: 10px;
+  }
+}
