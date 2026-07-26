@@ -66,25 +66,26 @@ function Login() {
 	};
 
 	return (
-		<div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+		<div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4">
 			
-			<h1 className="text-[40px] font-semibold text-[#2c444e] relative flex items-center justify-center after:content-[''] after:w-[450px] after:h-[4px] after:bg-[#2c444e] after:absolute after:bottom-[-20px] after:rounded-sm">
+			<h1 className="text-3xl sm:text-[40px] font-semibold text-[#2c444e] relative flex items-center justify-center after:content-[''] after:w-[200px] sm:after:w-[450px] after:h-[4px] after:bg-[#2c444e] after:absolute after:bottom-[-20px] after:rounded-sm">
 				Log in Form
 			</h1>
 
-			<div className="flex mt-[45px] w-[800px] h-[450px] bg-white shadow-[3px_4px_36px_-6px_rgba(0,0,0,0.4)] rounded-[50px] overflow-hidden">
+			<div className="flex mt-11 w-full max-w-[800px] bg-white shadow-[3px_4px_36px_-6px_rgba(0,0,0,0.4)] rounded-[20px] sm:rounded-[50px] overflow-hidden flex-col sm:flex-row">
 				
 				{/* Left Section */}
-				<div className="flex-[1.5] relative overflow-hidden rounded-l-[50px]">
+				{/* Left Section - hidden on small screens */}
+				<div className="flex-[1.5] relative overflow-hidden rounded-l-[50px] hidden sm:block">
 					<img
-						className="w-[160%] absolute  top-[50px]"
+						className="w-[160%] absolute top-[50px]"
 						src="./images/login.jpg"
 						alt="login"
 					/>
 				</div>
 
 				{/* Right Section */}
-				<div className="flex-[2] flex flex-col items-center justify-center">
+				<div className="flex-[2] flex flex-col items-center justify-center w-full p-6">
 					
 					<h2 className="text-[25px] font-normal text-[#2c444e] mb-[30px]">
 						Members Log in
@@ -96,7 +97,7 @@ function Login() {
 							placeholder="Email Address"
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
-							className="w-[320px] h-[35px] p-[5px] my-[5px] outline-none border border-[#2c444e] rounded text-[13px]"
+								className="w-full max-w-[320px] h-[35px] p-[5px] my-[5px] outline-none border border-[#2c444e] rounded text-[13px]"
 							required
 						/>
 
@@ -105,14 +106,14 @@ function Login() {
 							placeholder="Password"
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
-							className="w-[320px] h-[35px] p-[5px] my-[5px] outline-none border border-[#2c444e] rounded text-[13px]"
+							className="w-full max-w-[320px] h-[35px] p-[5px] my-[5px] outline-none border border-[#2c444e] rounded text-[13px]"
 							required
 						/>
 
 						<button
 							type="submit"
 							disabled={loading}
-							className="text-[18px] font-medium py-[12px] px-[25px] text-white bg-[#ffc801] rounded-[12px] mt-[10px] cursor-pointer disabled:opacity-50"
+							className="text-[18px] font-medium py-[12px] px-[25px] text-white bg-[#ffc801] rounded-[12px] mt-[10px] cursor-pointer disabled:opacity-50 w-full max-w-[200px]"
 						>
 							{loading ? "Logging in..." : "Log In"}
 						</button>
@@ -122,7 +123,7 @@ function Login() {
 
 					<button
 						onClick={googleAuth}
-						className="w-[230px] h-[40px] rounded-[5px] bg-white shadow-md text-[16px] font-medium mb-[20px] text-[#2c444e] cursor-pointer flex items-center justify-center"
+						className="w-full max-w-[230px] h-[40px] rounded-[5px] bg-white shadow-md text-[16px] font-medium mb-[20px] text-[#2c444e] cursor-pointer flex items-center justify-center"
 					>
 						<img
 							src="./images/google.png"
