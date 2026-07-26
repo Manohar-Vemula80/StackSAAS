@@ -80,12 +80,9 @@ export default function ProfilePage() {
 
       {/* Risk Selection */}
       <div className="bg-[#111827] p-6 rounded-xl mb-6">
-        <h3 className="text-lg font-semibold mb-4">
-          ⚠️ Risk Preference
-        </h3>
+        <h3 className="text-lg font-semibold mb-4">⚠️ Risk Preference</h3>
 
-        <div className="grid grid-cols-3 gap-4">
-
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {["low", "medium", "high"].map((level) => (
             <div
               key={level}

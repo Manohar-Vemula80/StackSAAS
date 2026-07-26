@@ -7,6 +7,9 @@ import {
   Settings,
   LogOut,
   Bell,
+  Menu,
+  X,
+  ArrowLeft,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -22,6 +25,7 @@ export default function Dashboard() {
   const [analyzing, setAnalyzing] = useState(false);
   const { credits, deductCredits, updateCredits } = useCredit();
   const { user, setUser, loading: userLoading } = useUser();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const API_BASE = import.meta.env.VITE_API_URL || "https://stacksaas.onrender.com";
  
   const handleLogout = async () => {
@@ -163,40 +167,52 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex h-screen bg-[#0B0F19] text-white">
+    <div className="flex h-screen bg-[#0B0F19] text-white overflow-hidden">
 
-      {/* 🟣 Sidebar */}
-      <div className="w-64 bg-gradient-to-b from-purple-700 to-indigo-600 p-6 flex flex-col justify-between rounded-r-3xl">
+      {/* 🔁 Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-30 bg-black/40 sm:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
+
+      {/* 🟣 Sidebar - hidden on small screens, slide-in on mobile */}
+      <div className={`fixed z-40 inset-y-0 left-0 w-3/4 max-w-xs transform bg-gradient-to-b from-purple-700 to-indigo-600 p-6 flex flex-col justify-between rounded-r-3xl transition-transform duration-200 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} sm:translate-x-0 sm:static sm:w-64 sm:rounded-r-3xl`}> 
 
         <div>
-          <h1 className="text-2xl font-bold mb-10">📊 StockAI</h1>
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold mb-4">📊 StockAI</h1>
+            <div className="flex items-center gap-2">
+              <button className="sm:hidden flex items-center gap-2 px-3 py-2 bg-black/20 rounded-md" onClick={() => setSidebarOpen(false)} aria-label="Back">
+                <ArrowLeft size={16} />
+                <span>Back</span>
+              </button>
+              <button className="hidden sm:block" onClick={() => setSidebarOpen(false)} aria-label="Close menu">
+                <X />
+              </button>
+            </div>
+          </div>
 
           <nav className="space-y-5 text-sm">
 
             <div
-              onClick={() => navigate("/")}
+              onClick={() => { navigate('/'); setSidebarOpen(false); }}
               className="flex items-center gap-3 bg-white text-black px-4 py-2 rounded-xl">
               <LayoutDashboard size={18} />
               Dashboard
             </div>
 
-            {/* <div onClick={() => navigate("/result")} className="flex items-center gap-3 cursor-pointer">
-              <BarChart2 size={18} /> Analysis
-            </div> */}
-
-            <div onClick={() => navigate("/payment")} className="flex items-center gap-3 cursor-pointer">
+            <div onClick={() => { navigate('/payment'); setSidebarOpen(false); }} className="flex items-center gap-3 cursor-pointer">
               <Wallet size={18} /> Buy Credits
             </div>
 
-            <div onClick={() => navigate("/history")} className="flex items-center gap-3 cursor-pointer">
+            <div onClick={() => { navigate('/history'); setSidebarOpen(false); }} className="flex items-center gap-3 cursor-pointer">
               <FileText size={18} /> History
             </div>
 
-            <div onClick={() => navigate("/profile")} className="flex items-center gap-3 cursor-pointer">
+            <div onClick={() => { navigate('/profile'); setSidebarOpen(false); }} className="flex items-center gap-3 cursor-pointer">
               <Users size={18} /> Profile
             </div>
 
-            <div onClick={() => navigate("/setting")} className="flex items-center gap-3 cursor-pointer">
+            <div onClick={() => { navigate('/setting'); setSidebarOpen(false); }} className="flex items-center gap-3 cursor-pointer">
               <Settings size={18} /> Settings
             </div>
           </nav>
@@ -212,29 +228,32 @@ export default function Dashboard() {
 
         {/* Topbar */}
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold">
-            Welcome 👋{user ? `, ${user.name}` : ""}
-          </h2>
+          <div className="flex items-center gap-4">
+            {!sidebarOpen ? (
+              <button className="sm:hidden mr-2 p-2 rounded-md bg-gray-800" onClick={() => setSidebarOpen(true)} aria-label="Open menu">
+                <Menu />
+              </button>
+            ) : (
+              <button className="sm:hidden mr-2 p-2 rounded-md bg-gray-800" onClick={() => setSidebarOpen(false)} aria-label="Back">
+                <ArrowLeft />
+              </button>
+            )}
+            <h2 className="text-xl font-semibold">Welcome 👋{user ? `, ${user.name}` : ""}</h2>
+          </div>
 
           <div className="flex items-center gap-4">
-            <div className="bg-[#1F2937] px-4 py-2 rounded-lg">
-              💰 {credits} Credits
-            </div>
-
-           
-            <div className="w-10 h-10 rounded-full bg-gray-500 flex items-center justify-center text-white font-semibold">
-              {user ? user.name.charAt(0).toUpperCase() : "U"}
-            </div>
+            <div className="bg-[#1F2937] px-4 py-2 rounded-lg">💰 {credits} Credits</div>
+            <div className="w-10 h-10 rounded-full bg-gray-500 flex items-center justify-center text-white font-semibold">{user ? user.name.charAt(0).toUpperCase() : "U"}</div>
           </div>
         </div>
 
         {/* 🔥 Stock Input Section */}
-        <div className="bg-[#111827] p-6 rounded-xl mb-6">
+          <div className="bg-[#111827] p-6 rounded-xl mb-6">
           <h3 className="text-lg font-semibold mb-4">
             Analyze Stock
           </h3>
 
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
 
               <input
@@ -267,7 +286,7 @@ export default function Dashboard() {
             <button
               onClick={handleAnalyze}
               disabled={analyzing}
-              className="bg-indigo-600 px-6 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-indigo-600 px-6 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
             >
               {analyzing ? "Analyzing..." : "Analyze 🚀"}
             </button>
@@ -275,7 +294,7 @@ export default function Dashboard() {
         </div>
 
         {/* 🔥 Stats Cards */}
-        <div className="grid grid-cols-3 gap-5 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
 
           <div className="bg-[#111827] p-5 rounded-xl">
             <p className="text-gray-400">Total Analyses</p>

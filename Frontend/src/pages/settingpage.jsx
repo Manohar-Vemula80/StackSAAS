@@ -217,7 +217,7 @@ export default function SettingsPage() {
       </div>
 
       {/* 🔥 Actions */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <button
           onClick={handleSave}
           className="py-3 bg-indigo-600 rounded-xl font-semibold text-white"
